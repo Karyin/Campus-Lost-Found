@@ -1,0 +1,192 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Campus Lost & Found - Public Hall</title>
+    <link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+
+    <nav class="navbar">
+        <div class="nav-brand">QIU Campus Lost And Found</div>
+        <div class="nav-links">
+            <a href="home.html">Home</a>
+            <a href="index.html" style="border-bottom: 2px solid white; padding-bottom: 2px;">Items</a>
+            <a href="about.html">About</a>
+            <a href="login.html" class="nav-btn-white" id="loginBtn">Login</a>
+        </div>
+    </nav>
+
+    <div class="header-section">
+        <h1>Campus Public Hall</h1>
+        <p>Search for lost items or see what others have found.</p>
+    </div>
+
+    <div class="search-container">
+        <input type="text" id="searchInput" placeholder="Search by item name or description..." />
+        <input type="date" id="dateFilter" title="Filter by date" />
+        <select id="categoryFilter" class="filter-select">
+            <option value="All">All Categories</option>
+            <option value="Lost">Lost Items</option>
+            <option value="Found">Found Items</option>
+        </select>
+        <select id="statusFilter">
+            <option value="All">All Status (Active & Resolved)</option>
+            <option value="Active">Active Only</option>
+            <option value="Resolved">Resolved Only</option>
+        </select>
+        <button id="resetBtn" class="btn-reset">Reset</button>
+    </div>
+
+    <div class="item-grid" id="itemsContainer">
+        <div style="grid-column: 1 / -1; text-align: center;">
+            <div class="loader"></div>
+            <p style="color:#888; margin-top:10px;">Fetching campus items...</p>
+        </div>
+    </div>
+
+    <div id="detailsModal" class="modal">
+        <div class="modal-content">
+            <span class="close-btn" onclick="closeDetails()">&times;</span>
+            <h2 id="modal-title" style="margin-bottom: 15px; padding-right: 30px;">Item Title</h2>
+            
+            <div style="margin-bottom: 20px;">
+                <span id="modal-category" class="type-badge"></span>
+                <span id="modal-status" class="status-badge"></span>
+            </div>
+            
+            <div style="line-height: 1.8; font-size: 15px;">
+                <p><strong>📍 Location:</strong> <span id="modal-location"></span></p>
+                <p><strong>📅 Date:</strong> <span id="modal-date"></span></p>
+                <p><strong>📞 Contact:</strong> <span id="modal-contact"></span></p>
+                
+                <hr style="margin: 15px 0; border: none; border-top: 1px solid #eee;">
+                
+                <p><strong>Description:</strong></p>
+                <p id="modal-desc" style="color: #555; margin-top: 5px; background: #f8f8f9; padding: 10px; border-radius: 8px; word-wrap: break-word; white-space: pre-wrap;"></p>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            const userEmail = localStorage.getItem('userEmail');
+            if (userEmail) {
+                const loginBtn = document.getElementById('loginBtn');
+                loginBtn.innerText = 'Dashboard';
+                loginBtn.href = 'userdashboard.html';
+            }
+            fetchItems(); 
+        });
+
+        let allItemsData = [];
+
+        async function fetchItems() {
+            try {
+                const res = await fetch('/api/items');
+                allItemsData = await res.json();
+                renderCards(allItemsData); 
+            } catch (err) {
+                console.error("Failed to fetch items:", err);
+                document.getElementById('itemsContainer').innerHTML = '<p class="empty-msg">Failed to load data from server.</p>';
+            }
+        }
+
+        function renderCards(dataArray) {
+            const container = document.getElementById('itemsContainer');
+            
+            if (dataArray.length === 0) {
+                container.innerHTML = '<p class="empty-msg">No items match your search criteria. 🕵️‍♂️</p>';
+                return;
+            }
+
+            container.innerHTML = dataArray.map(item => {
+                const statusClass = item.status === 'Active' ? 'status-active' : 'status-resolved';
+                
+                return `
+                <div class="card">
+                    ${item.imageUrl ? `<img src="${item.imageUrl}" class="card-img" alt="item image" loading="lazy">` : ''}
+                    <div class="card-content">
+                        <div class="card-header">
+                            <span class="type-badge">${item.category || 'Item'}</span>
+                            <span class="status-badge ${statusClass}">${item.status}</span>
+                        </div>
+                        
+                        <h3 class="card-title">${item.title}</h3>
+                        <div class="card-meta">
+                            <span>📍 ${item.location}</span>
+                            <span>📅 ${item.date.split('T')[0]}</span>
+                        </div>
+                        
+                        <p class="card-desc">${item.description || 'No additional description provided.'}</p>
+                        
+                        <button class="btn-black" style="margin-top: auto;" onclick="openDetails('${item._id}')">View Details</button>
+                    </div>
+                </div>
+            `}).join('');
+        }
+
+        function openDetails(itemId) {
+            const item = allItemsData.find(i => i._id === itemId);
+            if (!item) return;
+
+            document.getElementById('modal-title').innerText = item.title;
+            document.getElementById('modal-category').innerText = item.category || 'Item';
+            document.getElementById('modal-location').innerText = item.location;
+            document.getElementById('modal-date').innerText = item.date ? item.date.split('T')[0] : 'N/A';
+            document.getElementById('modal-contact').innerText = item.contactInfo;
+            document.getElementById('modal-desc').innerText = item.description || 'No additional description provided.';
+            
+            const statusBadge = document.getElementById('modal-status');
+            statusBadge.innerText = item.status;
+            statusBadge.className = 'status-badge ' + (item.status === 'Active' ? 'status-active' : 'status-resolved');
+
+            document.getElementById('detailsModal').style.display = 'flex';
+        }
+
+        function closeDetails() {
+            document.getElementById('detailsModal').style.display = 'none';
+        }
+
+        window.onclick = function(event) {
+            const modal = document.getElementById('detailsModal');
+            if (event.target === modal) {
+                closeDetails();
+            }
+        }
+
+        function applyFilters() {
+            const keyword = document.getElementById('searchInput').value.toLowerCase();
+            const selectedDate = document.getElementById('dateFilter').value;
+            const selectedStatus = document.getElementById('statusFilter').value;
+            const selectedCategory = document.getElementById('categoryFilter').value;
+
+            const filteredData = allItemsData.filter(item => {
+                const isTextMatch = item.title.toLowerCase().includes(keyword) || 
+                                (item.description && item.description.toLowerCase().includes(keyword));
+                const isDateMatch = selectedDate ? (item.date.includes(selectedDate)) : true;
+                const isStatusMatch = selectedStatus === 'All' ? true : (item.status === selectedStatus);
+                const isCategoryMatch = selectedCategory === 'All' ? true : (item.category === selectedCategory);
+
+                return isTextMatch && isDateMatch && isStatusMatch && isCategoryMatch;
+            });
+
+            renderCards(filteredData);
+        }
+
+        document.getElementById('searchInput').addEventListener('input', applyFilters);
+        document.getElementById('dateFilter').addEventListener('change', applyFilters);
+        document.getElementById('statusFilter').addEventListener('change', applyFilters);
+        document.getElementById('categoryFilter').addEventListener('change', applyFilters);
+
+        document.getElementById('resetBtn').addEventListener('click', () => {
+            document.getElementById('searchInput').value = '';
+            document.getElementById('dateFilter').value = '';
+            document.getElementById('statusFilter').value = 'All';
+            document.getElementById('categoryFilter').value = 'All';
+            renderCards(allItemsData);
+        });
+
+    </script>
+</body>
+</html>

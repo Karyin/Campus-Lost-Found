@@ -1,0 +1,113 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Campus L&F - Home</title>
+    <link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+
+    <nav class="navbar">
+        <div class="nav-brand">QIU Campus Lost And Found</div>
+        <div class="nav-links">
+            <a href="home.html" style="border-bottom: 2px solid white; padding-bottom: 2px;">Home</a>
+            <a href="index.html">Items</a>
+            <a href="about.html">About</a>
+            <a href="login.html" class="nav-btn-white">Login</a>
+        </div>
+    </nav>
+
+    <section class="hero-section">
+        <div class="hero-card">
+            <div class="card-tabs">
+                <div class="tab active" onclick="updateHeroContent(this, 'find')">
+                    <span>🔍</span> Find Items
+                </div>
+                <div class="tab" onclick="updateHeroContent(this, 'report')">
+                    <span>📢</span> Report Lost
+                </div>
+                <div class="tab" onclick="updateHeroContent(this, 'help')">
+                    <span>🤝</span> Help Others
+                </div>
+            </div>
+
+            <div id="content-area" class="fade-in">
+                <h1 id="hero-title">Find what you lost. Return what you found.</h1>
+                <p id="hero-desc">Join the campus platform with the largest network of students helping each other recover misplaced belongings.</p>
+                
+                <a href="index.html" id="hero-btn" class="btn-black">Start Browsing</a>
+                <br>
+                <a href="post.html" id="hero-link" class="link-underline">Report a new item now</a>
+            </div>
+        </div>
+    </section>
+
+    <script>
+        function updateHeroContent(element, type) {
+           //Switch Tab Style
+            document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
+            element.classList.add('active');
+
+            const title = document.getElementById('hero-title');
+            const desc = document.getElementById('hero-desc');
+            const btn = document.getElementById('hero-btn');
+            const link = document.getElementById('hero-link');
+            const contentArea = document.getElementById('content-area');
+
+            //Configure content for different states 
+            const data = {
+                'find': {
+                    t: 'Find what you lost. Return what you found.',
+                    d: 'Join the campus platform with the largest network of students helping each other recover misplaced belongings.',
+                    bText: 'Start Browsing',
+                    bHref: 'index.html',
+                    lText: 'Report a new item now',
+                    lHref: 'post.html'
+                },
+                'report': {
+                    t: 'Lost something? We are here to help.',
+                    d: 'Post your lost item details quickly. The more people who see it, the faster you get it back.',
+                    bText: 'Report Lost Item',
+                    bHref: 'post.html',
+                    lText: 'See what was recently found',
+                    lHref: 'index.html'
+                },
+                'help': {
+                    t: 'Found something? Be a campus hero.',
+                    d: 'Help items find their owners. A small act of kindness makes our campus a better place for everyone.',
+                    bText: 'Submit Found Item',
+                    bHref: 'post.html',
+                    lText: 'View active lost reports',
+                    lHref: 'index.html'
+                }
+            };
+
+            //Switch animation effects
+            contentArea.classList.remove('fade-in');
+            void contentArea.offsetWidth; 
+            contentArea.classList.add('fade-in');
+
+            title.innerText = data[type].t;
+            desc.innerText = data[type].d;
+            btn.innerText = data[type].bText;
+            btn.href = data[type].bHref;
+            link.innerText = data[type].lText;
+            link.href = data[type].lHref;
+        }
+
+        document.addEventListener('DOMContentLoaded', () => {
+        const userEmail = localStorage.getItem('userEmail');
+        
+        if (userEmail) {
+            const loginBtn = document.querySelector('.nav-btn-white');
+            
+            if (loginBtn) {
+                loginBtn.innerText = 'Dashboard';
+                loginBtn.href = 'userdashboard.html';
+            }
+        }
+    });
+    </script>
+</body>
+</html>
