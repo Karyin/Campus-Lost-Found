@@ -1,0 +1,324 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Campus L&F - User Access</title>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif; }
+        body { background-color: #f8f8f9; color: #333; line-height: 1.6; }
+
+        .navbar { background-color: #000000; display: flex; justify-content: space-between; align-items: center; padding: 15px 40px; color: white; position: sticky; top: 0; z-index: 100; }
+        .nav-brand { font-size: 24px; font-weight: normal; letter-spacing: 1px; }
+        .nav-links { display: flex; align-items: center; gap: 25px; }
+        .nav-links a { color: white; text-decoration: none; font-size: 15px; font-weight: 500; transition: color 0.2s; }
+        .nav-links a:hover { color: #cccccc; }
+        .nav-btn-white { background-color: white; color: black !important; padding: 10px 18px; border-radius: 20px; font-weight: bold !important; transition: background 0.2s; }
+        .nav-btn-white:hover { background-color: #e2e2e2; }
+        
+        .main-container { 
+            flex: 1; 
+            display: flex; 
+            align-items: flex-start; 
+            justify-content: center; 
+            padding-top: 100px; 
+        }
+
+        .container {
+            background-color: #fff;
+            border-radius: 15px;
+            box-shadow: 0 14px 28px rgba(0,0,0,0.1), 0 10px 10px rgba(0,0,0,0.05);
+            position: relative;
+            overflow: hidden;
+            width: 800px;
+            max-width: 100%;
+            min-height: 500px;
+        }
+
+        .form-container { position: absolute; top: 0; height: 100%; transition: all 0.6s ease-in-out; }
+        .sign-in-container { left: 0; width: 50%; z-index: 2; }
+        .sign-up-container { left: 0; width: 50%; opacity: 0; z-index: 1; }
+
+        .container.right-panel-active .sign-in-container { transform: translateX(100%); opacity: 0; }
+        .container.right-panel-active .sign-up-container { transform: translateX(100%); opacity: 1; z-index: 5; }
+
+        form { background: #fff; display: flex; align-items: center; justify-content: center; flex-direction: column; padding: 0 40px; height: 100%; text-align: center; }
+        h2 { margin-bottom: 15px; font-size: 28px; }
+        input { background: #f0f0f0; border: none; padding: 12px 15px; margin: 8px 0; width: 100%; border-radius: 8px; font-size: 14px; }
+        
+        .btn-black {
+            border-radius: 20px; background: #000; color: #fff; font-size: 12px; font-weight: bold; 
+            padding: 12px 45px; letter-spacing: 1px; text-transform: uppercase; cursor: pointer;
+            margin-top: 15px; border: none; transition: transform 80ms ease-in;
+        }
+        .btn-black:active { transform: scale(0.95); }
+
+        .overlay-container {
+            position: absolute; top: 0; left: 50%; width: 50%; height: 100%;
+            overflow: hidden; transition: transform 0.6s ease-in-out; z-index: 100;
+        }
+        .container.right-panel-active .overlay-container { transform: translateX(-100%); }
+
+        .overlay {
+            background: linear-gradient(to right, #333, #000); color: #fff;
+            position: relative; left: -100%; height: 100%; width: 200%;
+            transform: translateX(0); transition: transform 0.6s ease-in-out;
+        }
+        .container.right-panel-active .overlay { transform: translateX(50%); }
+
+        .overlay-panel {
+            position: absolute; display: flex; align-items: center; justify-content: center;
+            flex-direction: column; padding: 0 40px; text-align: center; top: 0; height: 100%;
+            width: 50%; transition: transform 0.6s ease-in-out;
+        }
+        .overlay-left { transform: translateX(-20%); }
+        .container.right-panel-active .overlay-left { transform: translateX(0); }
+        .overlay-right { right: 0; transform: translateX(0); }
+        .container.right-panel-active .overlay-right { transform: translateX(20%); }
+
+        .btn-ghost {
+            background: transparent; border: 1px solid #fff; color: #fff;
+            border-radius: 20px; padding: 10px 30px; font-size: 12px; font-weight: bold;
+            text-transform: uppercase; cursor: pointer; margin-top: 10px;
+        }
+
+        .pwd-field { position: relative; width: 100%; }
+        .show-hide { 
+            position: absolute; right: 15px; top: 50%; transform: translateY(-50%); 
+            font-size: 10px; font-weight: bold; color: #666; cursor: pointer; user-select: none;
+        }
+
+        /* Forgot Modal */
+        #forgotModal .pwd-field input { margin: 8px 0 !important; }
+
+        #success-alert { 
+            display: none; color: #28a745; font-size: 13px; font-weight: bold; margin-bottom: 10px; 
+        }
+    </style>
+</head>
+<body>
+
+    <nav class="navbar">
+        <div class="nav-brand">QIU Campus Lost And Found</div>
+        <div class="nav-links">
+            <a href="home.html">Home</a>
+            <a href="index.html">Items</a>
+            <a href="about.html">About</a>
+            <a href="login.html" class="nav-btn-white" style="border-bottom: 2px solid black;">Login</a>
+        </div>
+    </nav>
+
+    <div class="main-container">
+        <div class="container" id="container">
+            <div class="form-container sign-up-container">
+                <form id="signupForm">
+                    <h2>Create User</h2>
+                    <div id="success-alert">Success! Returning to Login...</div>
+                    
+                    <input type="text" id="reg-user" placeholder="Username" required />
+                    <input type="email" id="reg-email" placeholder="Email (@qiu.edu.my)" required />
+                    
+                    <div class="pwd-field">
+                        <input type="password" id="reg-pass" placeholder="Password (Min. 8 characters)" required minlength="8" />
+                        <span class="show-hide" onclick="togglePwd('reg-pass', this)">SHOW</span>
+                    </div>
+                    
+                    <button type="submit" class="btn-black">Sign Up</button>
+                </form>
+            </div>
+
+            <div class="form-container sign-in-container">
+                <form id="loginForm">
+                    <h2>User Login</h2>
+                    <input type="email" id="log-user" placeholder="University Email (@qiu.edu.my)" required />
+                
+                    <div class="pwd-field">
+                        <input type="password" id="log-pass" placeholder="Password" required />
+                        <span class="show-hide" onclick="togglePwd('log-pass', this)">SHOW</span>
+                    </div>
+                    <p style="margin-top: 10px; font-size: 12px; color: #666; cursor: pointer;" onclick="openForgotModal()">
+                    Forgot password?
+                    </p>
+                    <button type="submit" class="btn-black">Sign In</button>
+                </form>
+            </div>
+
+            <div class="overlay-container">
+                <div class="overlay">
+                    <div class="overlay-panel overlay-left">
+                        <h2>Welcome Back!</h2>
+                        <p>To keep connected with us please login with your info</p>
+                        <button class="btn-ghost" id="signIn">Login Instead</button>
+                    </div>
+                    <div class="overlay-panel overlay-right">
+                        <h2>Hello, User!</h2>
+                        <p>Enter your details and start your journey with us</p>
+                        <button class="btn-ghost" id="signUp">Create One</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div id="forgotModal" style="display:none; position:fixed; top:0; left:0; width:100%; height:100%; background:rgba(0,0,0,0.7); z-index:1000; align-items:center; justify-content:center;">
+        <div style="background:white; padding:30px; border-radius:15px; width:350px; text-align:center; position:relative;">
+            <span onclick="closeForgotModal()" style="position:absolute; right:20px; top:10px; cursor:pointer; font-size:20px;">&times;</span>
+            <h3 style="margin-bottom:15px;">Reset Password</h3>
+            <p style="font-size:12px; color:#666; margin-bottom:15px;">Enter your registered email and new password.</p>
+            
+            <input type="email" id="forgot-email" placeholder="University Email" style="margin-bottom:10px;">
+            
+            <div class="pwd-field">
+                <input type="password" id="forgot-new-pass" placeholder="New Password (Min. 8 chars)">
+                <span class="show-hide" onclick="togglePwd('forgot-new-pass', this)">SHOW</span>
+            </div>
+            
+            <button class="btn-black" onclick="handleReset()">Update Password</button>
+        </div>
+    </div>
+
+    <script>
+        //Security and redirection detection during page loading
+        window.addEventListener('DOMContentLoaded', () => {
+            if (localStorage.getItem('userEmail')) {
+                window.location.href = 'userdashboard.html';
+                return;
+            }
+
+            const urlParams = new URLSearchParams(window.location.search);
+            if (urlParams.get('msg') === 'need_login') {
+                alert("⚠️ Please login first to post an item!");
+                window.history.replaceState({}, document.title, "login.html");
+            }
+        });
+
+        // for switching between left and right panels
+        const container = document.getElementById('container');
+        document.getElementById('signUp').addEventListener('click', () => container.classList.add("right-panel-active"));
+        document.getElementById('signIn').addEventListener('click', () => container.classList.remove("right-panel-active"));
+
+        function togglePwd(id, el) {
+            const input = document.getElementById(id);
+            if (input.type === 'password') {
+                input.type = 'text';
+                el.innerText = 'HIDE';
+            } else {
+                input.type = 'password';
+                el.innerText = 'SHOW';
+            }
+        }
+
+        //Register API integration
+        document.getElementById('signupForm').addEventListener('submit', async (e) => {
+            e.preventDefault();
+            const username = document.getElementById('reg-user').value;
+            const email = document.getElementById('reg-email').value;
+            const password = document.getElementById('reg-pass').value;
+            
+            if (!email.endsWith('@qiu.edu.my')) {
+                alert('Access Denied: Please use your University Email (@qiu.edu.my)');
+                return;
+            }
+
+            if (password.length < 8) {
+                alert('Security Alert: Password must be at least 8 characters long.');
+                return;
+            }
+
+            try {
+                const res = await fetch('/api/auth/signup', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ username, email, password })
+                });
+                
+                const data = await res.json();
+                if (res.ok) {
+                    const alertBox = document.getElementById('success-alert');
+                    alertBox.style.display = 'block';
+                    
+                    setTimeout(() => {
+                        alertBox.style.display = 'none';
+                        container.classList.remove("right-panel-active");
+                        e.target.reset();
+                    }, 1500);
+                } else { 
+                    alert(data.error); 
+                }
+            } catch (err) {
+                console.error("Signup Error:", err);
+                alert("Server error, please try again later.");
+            }
+        });
+
+        //Login API Integration
+        document.getElementById('loginForm').addEventListener('submit', async (e) => {
+            e.preventDefault();
+            const username = document.getElementById('log-user').value; 
+            const password = document.getElementById('log-pass').value;
+
+            try {
+                const res = await fetch('/api/auth/login', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ username, password })
+                });
+                const data = await res.json();
+                
+                if (res.ok) {
+                    localStorage.setItem('userEmail', data.user.email); 
+                    localStorage.setItem('userName', data.user.username);
+                    window.location.href = 'userdashboard.html';
+                } else {
+                    alert(data.error || "Login failed. Please check your credentials.");
+                }
+            } catch (err) {
+                console.error("Login Error:", err);
+                alert("Server error, please try again later.");
+            }
+        }); 
+
+        //Control pop-up switch
+        function openForgotModal() {
+            document.getElementById('forgotModal').style.display = 'flex';
+        }
+
+        function closeForgotModal() {
+            document.getElementById('forgotModal').style.display = 'none';
+        }
+
+       // Handling reset logic
+        async function handleReset() {
+            const email = document.getElementById('forgot-email').value;
+            const newPassword = document.getElementById('forgot-new-pass').value;
+
+            if (!email.endsWith('@qiu.edu.my')) {
+                alert("Please use your official University Email (@qiu.edu.my)");
+                return;
+            }
+
+            if (newPassword.length < 8) {
+                alert("Security Alert: New password must be at least 8 characters long.");
+                return;
+            }
+
+            try {
+                const res = await fetch('/api/auth/reset-password', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ email, newPassword })
+                });
+
+                const data = await res.json();
+                if (res.ok) {
+                    alert("✅ Password updated successfully! You can now login.");
+                    closeForgotModal();
+                } else {
+                    alert(data.error || "Reset failed.");
+                }
+            } catch (err) {
+                alert("Server error, please try again later.");
+            }
+        }
+    </script>
+</body>
+</html>
