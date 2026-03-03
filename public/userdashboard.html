@@ -1,0 +1,149 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Campus L&F - User Dashboard</title>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif; }
+        body { 
+        background: linear-gradient(135deg, #b2cbef 0%, #bd8f8f 100%); 
+        min-height: 100vh; 
+        color: #333; 
+        line-height: 1.6; 
+        }
+
+        .navbar { background-color: #000000; display: flex; justify-content: space-between; align-items: center; padding: 15px 40px; color: white; position: sticky; top: 0; z-index: 100; }
+        .nav-brand { font-size: 24px; font-weight: normal; letter-spacing: 1px; }
+        .nav-links { display: flex; align-items: center; gap: 25px; }
+        .nav-links a { color: white; text-decoration: none; font-size: 15px; font-weight: 500; transition: color 0.2s; }
+        .nav-links a:hover { color: #cccccc; }
+        .nav-btn-logout { background-color: #ff4444; color: white !important; padding: 8px 18px; border-radius: 20px; font-weight: bold !important; transition: background 0.2s; }
+        .nav-btn-logout:hover { background-color: #cc0000; }
+
+        .dashboard-container { 
+            max-width: 1100px; 
+            margin: 60px auto; 
+            padding: 0 20px;
+            text-align: center;
+        }
+
+        .welcome-section { margin-bottom: 40px; }
+        .welcome-section h1 { font-size: 32px; margin-bottom: 10px; }
+        .welcome-section p { color: #666; font-size: 16px; }
+
+        .user-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 30px;
+            margin-top: 40px;
+        }
+
+        .user-card {
+            background: white;
+            padding: 40px 30px;
+            border-radius: 15px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.05);
+            text-decoration: none;
+            color: inherit;
+            transition: all 0.3s ease;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            border: 1px solid transparent;
+        }
+
+        .user-card:hover {
+            transform: translateY(-8px);
+            box-shadow: 0 20px 40px rgba(0,0,0,0.1);
+            border-color: #000;
+        }
+
+        .icon-box {
+            width: 70px;
+            height: 70px;
+            background: #f0f0f0;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 28px;
+            margin-bottom: 20px;
+            transition: background 0.3s;
+        }
+
+        .user-card:hover .icon-box { background: #000; color: #fff; }
+        .user-card h3 { font-size: 20px; margin-bottom: 15px; }
+        .user-card p { color: #777; font-size: 14px; margin-bottom: 25px; line-height: 1.5; height: 42px; }
+
+        .btn-enter {
+            padding: 10px 25px;
+            border: 2px solid #000;
+            border-radius: 25px;
+            font-weight: bold;
+            font-size: 13px;
+            transition: 0.3s;
+            text-transform: uppercase;
+        }
+
+        .user-card:hover .btn-enter { background: #000; color: #fff; }
+    </style>
+</head>
+<body>
+   <nav class="navbar">
+        <div class="nav-brand">QIU Campus Lost And Found</div>
+        <div class="nav-links">
+            <a href="home.html">Home</a> 
+            <a href="index.html">Items</a> 
+            <a href="about.html">About</a> 
+            <a href="#" onclick="logout()" class="nav-btn-logout">Logout</a>
+        </div>
+    </nav>
+
+    <div class="dashboard-container">
+        <div class="welcome-section">
+            <h1>Student Dashboard</h1>
+            <p>Welcome back, <span id="userName" style="font-weight: bold; color: #000;">Student</span>! Manage your profile and items here.</p>
+        </div>
+
+        <div class="user-grid">
+            <a href="profile.html" class="user-card">
+                <div class="icon-box">👤</div>
+                <h3>My Profile</h3>
+                <p>Update your username or change your account password.</p>
+                <div class="btn-enter">Edit Profile</div>
+            </a>
+
+            <a href="post.html" class="user-card">
+                <div class="icon-box">📢</div>
+                <h3>Post an Item</h3>
+                <p>Report a lost item or announce something you found.</p>
+                <div class="btn-enter">Create Post</div>
+            </a>
+
+            <a href="postmanage.html" class="user-card">
+                <div class="icon-box">📦</div>
+                <h3>Manage My Posts</h3>
+                <p>View, edit, delete, or mark your posted items as resolved.</p>
+                <div class="btn-enter">View Posts</div>
+            </a>
+        </div>
+    </div>
+
+    <script>
+    window.onload = function() {
+        const userEmail = localStorage.getItem('userEmail');
+        if (!userEmail) {
+            window.location.href = 'login.html';
+        } else {
+            const userName = localStorage.getItem('userName') || "Student";
+            document.getElementById('userName').innerText = userName;
+        }
+    };
+
+        function logout() {
+            localStorage.clear();
+            window.location.href = 'login.html';
+        }
+    </script>
+</body>
+</html>
