@@ -1,0 +1,87 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>404 - Endpoint Not Found</title>
+    <style>
+         * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif; }
+        body { background-color: #f8f8f9; color: #333; line-height: 1.6; }
+
+        .navbar { background-color: #000000; display: flex; justify-content: space-between; align-items: center; padding: 15px 40px; color: white; position: sticky; top: 0; z-index: 100; }
+        .nav-brand { font-size: 24px; font-weight: normal; letter-spacing: 1px; }
+        .nav-links { display: flex; align-items: center; gap: 25px; }
+        .nav-links a { color: white; text-decoration: none; font-size: 15px; font-weight: 500; transition: color 0.2s; }
+        .nav-links a:hover { color: #cccccc; }
+        .nav-btn-white { background-color: white; color: black !important; padding: 10px 18px; border-radius: 20px; font-weight: bold !important; transition: background 0.2s; }
+        .nav-btn-white:hover { background-color: #e2e2e2; }
+
+        .split-container {
+            display: flex; flex: 1; height: calc(100vh - 70px);
+        }
+
+        .left-illustration {
+            flex: 1; background-color: #f8f8f9; 
+            display: flex; justify-content: center; align-items: center;
+            border-right: 3px solid #000; overflow: hidden;
+        }
+        
+        .left-illustration img {
+            width: 100%; height: 100%; object-fit: cover;
+        }
+
+        .right-content {
+            flex: 1; display: flex; flex-direction: column; justify-content: center;
+            padding: 8% 10%; background-color: #fff;
+        }
+
+        .error-code { font-size: 120px; font-weight: 900; letter-spacing: -3px; line-height: 1; margin-bottom: 15px; }
+        .error-title { font-size: 32px; font-weight: bold; margin-bottom: 20px; }
+        .error-desc { font-size: 18px; color: #555; line-height: 1.6; max-width: 450px; margin-bottom: 40px; }
+
+        .btn-black {
+            background-color: #000; color: #fff; text-decoration: none; padding: 18px 40px;
+            font-weight: bold; font-size: 16px; border: 2px solid #000; display: inline-block;
+            transition: 0.3s; align-self: flex-start; cursor: pointer;
+        }
+        .btn-black:hover { background-color: #fff; color: #000; box-shadow: 4px 4px 0px #000; transform: translate(-2px, -2px); }
+
+        @media (max-width: 900px) {
+            .split-container { flex-direction: column; overflow-y: auto; height: auto; }
+            .left-illustration { min-height: 50vh; border-right: none; border-bottom: 3px solid #000; }
+            .right-content { min-height: 50vh; padding: 10% 5%; align-items: center; text-align: center; }
+            .btn-black { align-self: center; }
+            body { overflow: auto; }
+        }
+    </style>
+</head>
+<body>
+
+    <nav class="navbar">
+        <div class="nav-brand">Campus Lost And Found</div>
+        <div class="nav-links">
+            <a href="home.html">Home</a>
+            <a href="index.html">Items</a>
+            <a href="about.html">About</a>
+            <a href="login.html" class="nav-btn-white" id="loginBtn">Login</a>
+        </div>
+    </nav>
+
+    <div class="split-container">
+        
+        <div class="left-illustration"> 
+           <img src="404.jpg" alt="404 Not Found" loading="lazy">
+        </div>
+
+        <div class="right-content">
+            <div class="error-code">404.</div>
+            <h2 class="error-title">Endpoint Not Found</h2>
+            <p class="error-desc">We looked everywhere, but the page you requested is missing. It might be lost or moved.</p>
+            
+            <a href="home.html" class="btn-black">Go Back</a>
+        </div>
+
+    </div>
+
+</body>
+</html>
