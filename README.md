@@ -50,7 +50,7 @@ Student ID: QIU-202510-008911
 
 ### 2.3 Configuration
 Create a `.env` file in the root directory and add:
-MONGO_URI=mongodb+srv://admin:123@campuslostfound.aocn4ie.mongodb.net/CampusLostFound?retryWrites=true&w=majority
+MONGO_URI=your_mongodb_atlas_connection_string
 PORT=3000
 ---
 
